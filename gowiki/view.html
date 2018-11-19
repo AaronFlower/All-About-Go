@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>View</title>
+    </head>
+    <body>
+        <h1>{{.Title}}</h1>
+        <p><a href="/edit/{{.Title}}">Edit</a></p>
+        <div>
+            {{printf "%s" .Body}}
+        </div>
+    </body>
+</html>

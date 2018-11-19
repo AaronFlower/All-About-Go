@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>Edit Page</title>
+    </head>
+    <body>
+        <h1>Editing {{.Title}}</h1>
+        <form action="/save/{{.Title}}" method="POST">
+            <div>
+                <textarea name="body" cols="30" rows="10">{{printf "%s" .Body}}</textarea>
+            </div>
+            <div><input type="submit" value="Save"></div>
+        </form>
+    </body>
+</html>
