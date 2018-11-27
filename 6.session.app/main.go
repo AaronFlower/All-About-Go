@@ -7,49 +7,56 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"html/template"
-	textTemplate "text/template"
 
 	session "github.com/aaronflower/ago/6.session"
 	_ "github.com/aaronflower/ago/6.session/providers"
 )
 
-func sayHello(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	fmt.Println(r.Form)
-	fmt.Println("Path", r.URL.Path)
-	fmt.Println("scheme", r.URL.Scheme)
-	fmt.Println(r.Form["url_log"])
+func index(w http.ResponseWriter, r *http.Request) {
+	sess := globalSessions.SessionStart(w, r)
+	username := sess.Get("username")
 
-	for k, v := range r.Form {
-		fmt.Println("key:", k)
-		fmt.Println("val:", strings.Join(v, ""))
+	data := struct {
+		UserName    string
+		AccessTimes int
+	}{
+		"",
+		0,
 	}
-	fmt.Fprintf(w, "hello http!")
+
+	if name, ok := username.(string); ok {
+		data.UserName = name
+		data.AccessTimes = countAccessTimes(w, r)
+	}
+
+	t, _ := template.ParseFiles("index.gtpl")
+	w.Header().Set("Content-Type", "text/html")
+
+	t.Execute(w, data)
 }
 
-func count(w http.ResponseWriter, r *http.Request) {
+func countAccessTimes(w http.ResponseWriter, r *http.Request) int {
 	sess := globalSessions.SessionStart(w, r)
 	createtime := sess.Get("createtime")
 
-	if createtime == nil {
-		sess.Set("createtime", time.Now().Unix())
-	} else if (createtime.(int64) + 360) < time.Now().Unix() {
+	if (createtime.(int64) + 3600) < time.Now().Unix() {
 		globalSessions.SessionDestroy(w, r)
 		sess = globalSessions.SessionStart(w, r)
+		http.Redirect(w, r, "/", 302)
 	}
+
+	count := 1
 	ct := sess.Get("countnum")
 	if ct == nil {
 		sess.Set("countnum", 1)
 	} else {
-		sess.Set("countnum", (ct.(int) + 1))
+		count = ct.(int) + 1
+		sess.Set("countnum", count)
 	}
-	t, _ := template.ParseFiles("count.gtpl")
-	w.Header().Set("Content-Type", "text/html")
-	t.Execute(w, sess.Get("countnum"))
+	return count
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -78,16 +85,14 @@ func login(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, data)
 	} else {
 		sess.Set("username", r.FormValue("username"))
-		fmt.Println("username:", r.FormValue("username"))
-		fmt.Println("password:", r.FormValue("password"))
-		template.HTMLEscape(w, []byte(r.Form.Get("username")))
-
-		t, err := textTemplate.New("Foo").Parse(`{{define "T"}} Hello, {{.}}!{{end}}`)
-		if err != nil {
-			log.Fatal(" pass error")
-		}
-		err = t.ExecuteTemplate(w, "T", r.Form.Get("username"))
+		sess.Set("createtime", time.Now().Unix())
+		http.Redirect(w, r, "/", 302)
 	}
+}
+
+func logout(w http.ResponseWriter, r *http.Request) {
+	globalSessions.SessionDestroy(w, r)
+	http.Redirect(w, r, "/", 302)
 }
 
 var globalSessions *session.Manager
@@ -98,9 +103,9 @@ func init() {
 }
 
 func main() {
-	http.HandleFunc("/", sayHello)
+	http.HandleFunc("/", index)
 	http.HandleFunc("/login", login)
-	http.HandleFunc("/count", count)
+	http.HandleFunc("/logout", logout)
 
 	// t := time.Date(2018, time.November, 10, 26, 0, 0, 0, time.UTC)
 	// fmt.Printf("Go launched = %+v\n", t.Local())
