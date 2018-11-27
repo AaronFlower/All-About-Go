@@ -31,6 +31,27 @@ func sayHello(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "hello http!")
 }
 
+func count(w http.ResponseWriter, r *http.Request) {
+	sess := globalSessions.SessionStart(w, r)
+	createtime := sess.Get("createtime")
+
+	if createtime == nil {
+		sess.Set("createtime", time.Now().Unix())
+	} else if (createtime.(int64) + 360) < time.Now().Unix() {
+		globalSessions.SessionDestroy(w, r)
+		sess = globalSessions.SessionStart(w, r)
+	}
+	ct := sess.Get("countnum")
+	if ct == nil {
+		sess.Set("countnum", 1)
+	} else {
+		sess.Set("countnum", (ct.(int) + 1))
+	}
+	t, _ := template.ParseFiles("count.gtpl")
+	w.Header().Set("Content-Type", "text/html")
+	t.Execute(w, sess.Get("countnum"))
+}
+
 func login(w http.ResponseWriter, r *http.Request) {
 	sess := globalSessions.SessionStart(w, r)
 	r.ParseForm()
@@ -79,6 +100,7 @@ func init() {
 func main() {
 	http.HandleFunc("/", sayHello)
 	http.HandleFunc("/login", login)
+	http.HandleFunc("/count", count)
 
 	// t := time.Date(2018, time.November, 10, 26, 0, 0, 0, time.UTC)
 	// fmt.Printf("Go launched = %+v\n", t.Local())
