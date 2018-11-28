@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>Web Socket Test</title>
+        <script charset="utf-8">
+            let sock = null
+            let wsuri = "ws://127.0.0.1:1234"
+
+            window.onload = function () {
+                console.log("onload...")
+
+                sock = new WebSocket(wsuri)
+
+                sock.onopen = function () {
+                    console.log("conneced to " + wsuri)
+                }
+
+                sock.onclose = function (e) {
+                    console.log("connection closed", e.code)
+                }
+
+                sock.onmessage = function (e) {
+                    console.log("message received: ", e.data)
+                }
+            }
+
+            function send() {
+                let msg = document.getElementById("msg").value
+                sock.send(msg)
+            }
+        </script>
+    </head>
+    <body>
+        <h2>WebSocket Echo Test</h2>
+        <form action="">
+            <div>
+                <input type="text" id="msg" value="" />
+            </div>
+        </form>
+
+        <button onclick="send()">Send Message</button>
+    </body>
+</html>
