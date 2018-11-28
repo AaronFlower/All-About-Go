@@ -24,7 +24,7 @@ func main() {
 
 	result, err := ioutil.ReadAll(conn)
 	checkError(err)
-	fmt.Println(string(result))
+	fmt.Println("server response--->>:", string(result))
 	os.Exit(0)
 }
 
