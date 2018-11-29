@@ -7,8 +7,24 @@ import (
 	"os"
 )
 
+func testFunc(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	code := r.FormValue("code")
+	switch code {
+	case "500":
+		http.Error(w, "Internal Server Error!", 500)
+	case "404":
+		http.Error(w, "Resources not found!", 404)
+	default:
+		http.Error(w, "Unknown Error", 500)
+	}
+}
+
 func main() {
-	http.HandleFunc("/", sayHello)
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/", fs)
+
+	http.HandleFunc("/test", testFunc)
 
 	err := http.ListenAndServe(":9090", nil)
 	if err != nil {
