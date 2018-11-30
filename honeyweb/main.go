@@ -23,6 +23,5 @@ func main() {
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-	fmt.Printf("MyApp = %+v\n", honey.MyApp)
 	honey.Run(config)
 }
