@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	_ "github.com/aaronflower/ago/honeyweb/example02/route"
+	_ "github.com/aaronflower/ago/honeyweb/example02/routes"
 
 	"github.com/aaronflower/honey"
 )
