@@ -15,6 +15,10 @@ func (c *fooController) Get() {
 	fmt.Fprintf(c.Ct.ResponseWriter, "Hello World!")
 }
 
+func (c *fooController) Post() {
+	fmt.Fprintf(c.Ct.ResponseWriter, "Your post has been received!")
+}
+
 func main() {
 	honey.MyApp.Handlers.Add("/", &fooController{})
 	config := &honey.Config{
