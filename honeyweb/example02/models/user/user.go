@@ -24,7 +24,7 @@ func checkErr(err error) {
 }
 
 func getDB() *sql.DB {
-	db, err := sql.Open("mysql", "root@unix(/tmp/mysql.sock)/test?charset=utf8")
+	db, err := sql.Open("mysql", "root@unix(/tmp/mysql.sock)/test?charset=utf8&parseTime=true")
 	checkErr(err)
 	return db
 }
@@ -34,16 +34,22 @@ func (u User) GetAll() (users []User) {
 	db := getDB()
 	defer db.Close()
 	fmt.Println("Before query")
-	rows, err := db.Query("SELECT name, age FROM user")
+	rows, err := db.Query("SELECT id, name, age, created FROM user")
 	fmt.Println("After query")
 	checkErr(err)
 
 	for rows.Next() {
+		fmt.Println("First loop")
 		var user User
-		err = rows.Scan(&user.Name, &user.Age)
+		err = rows.Scan(&user.ID, &user.Name, &user.Age, &user.Created)
 		checkErr(err)
 		users = append(users, user)
 	}
+	if err = rows.Err(); err != nil {
+		checkErr(err)
+	}
+	rows.Close()
+
 	return
 }
 
