@@ -37,3 +37,6 @@ Date: Sat, 01 Dec 2018 13:42:02 GMT
 
 Return all users!
 ```
+
+### TODO
+- Add [sqlx](https://github.com/jmoiron/sqlx)
