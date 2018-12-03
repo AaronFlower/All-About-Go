@@ -93,6 +93,17 @@ func Save(user User) (User, error) {
 }
 
 // Delete deletes a user by id.
-func Delete(id int) {
-	return
+func Delete(id int) error {
+	stmt, err := db.Prepare("DELETE FROM user where id ?")
+	defer stmt.Close()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	_, err = stmt.Exec(id)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	return nil
 }
