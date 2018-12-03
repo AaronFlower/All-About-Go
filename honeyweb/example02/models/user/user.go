@@ -3,6 +3,7 @@ package user
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 
 	// mysql driver
@@ -23,6 +24,8 @@ func checkErr(err error) {
 	}
 }
 
+var db = getDB()
+
 func getDB() *sql.DB {
 	db, err := sql.Open("mysql", "root@unix(/tmp/mysql.sock)/test?charset=utf8&parseTime=true")
 	checkErr(err)
@@ -30,7 +33,7 @@ func getDB() *sql.DB {
 }
 
 // GetAll returns all users.
-func (u User) GetAll() (users []User) {
+func GetAll() (users []User) {
 	db := getDB()
 	defer db.Close()
 	fmt.Println("Before query")
@@ -54,13 +57,39 @@ func (u User) GetAll() (users []User) {
 }
 
 // Get gets the user info by ID
-func (u User) Get(id int) (user User) {
-	return
+func Get(id int64) (User, error) {
+	var u User
+	stmt, err := db.Prepare("select id, name, age, created from user where id = ? ")
+	defer stmt.Close()
+	if err != nil {
+		log.Fatal(err)
+		return u, err
+	}
+	err = stmt.QueryRow(id).Scan(&u.ID, &u.Name, &u.Age, &u.Created)
+	if err != nil {
+		log.Fatal(err)
+		return u, err
+	}
+	return u, nil
 }
 
 // Save creates a user.
-func Save(user User) (u User) {
-	return
+func Save(user User) (User, error) {
+	stmt, err := db.Prepare("INSERT INTO user (id, name, age) VALUES(null, ?, ?)")
+	defer stmt.Close()
+	if err != nil {
+		checkErr(err)
+	}
+	res, err := stmt.Exec(user.Name, user.Age)
+	if err != nil {
+		checkErr(err)
+	}
+	lastID, err := res.LastInsertId()
+	if err != nil {
+		checkErr(err)
+	}
+	stmt.Close()
+	return Get(lastID)
 }
 
 // Delete deletes a user by id.
