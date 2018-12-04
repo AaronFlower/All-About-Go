@@ -31,7 +31,19 @@ func Init(
 }
 
 func main() {
-	Init(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
+	// to config the default log.
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+	log.Println("Hello log!")
+
+	f, err := os.OpenFile("log.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalln("Failed to open log file:", err)
+	}
+	defer f.Close()
+	// You can also have the logger write to multiple destinations at the same time.
+	multi := io.MultiWriter(f, os.Stdout)
+	Init(ioutil.Discard, f, multi, f)
 	Trace.Println("I have something standard to say")
 	Info.Println("Special Information")
 	Warning.Println("There is something you need to know about")
