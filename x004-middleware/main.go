@@ -25,6 +25,31 @@ func NewLogger(handlerToWrap http.Handler) *Logger {
 	return &Logger{handlerToWrap}
 }
 
+// ResponseHeader is a middleware handler that adds a header to the response.
+type ResponseHeader struct {
+	handler     http.Handler
+	headerName  string
+	headerValue string
+}
+
+// ServeHTTP handles the request by adding the response header
+func (rh *ResponseHeader) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// add the header
+	w.Header().Add(rh.headerName, rh.headerValue)
+
+	// call the wrapped handler
+	rh.handler.ServeHTTP(w, r)
+}
+
+// NewResponseHeader constructs a new ResponseHeader middleware handler
+func NewResponseHeader(handler http.Handler, headerName string, headerValue string) *ResponseHeader {
+	return &ResponseHeader{
+		handler,
+		headerName,
+		headerValue,
+	}
+}
+
 func helloHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hello world\n"))
 }
@@ -41,7 +66,7 @@ func main() {
 	mux.HandleFunc("/v1/hello", helloHandler)
 	mux.HandleFunc("/v1/time", currentHandler)
 
-	wrappedMux := NewLogger(mux)
+	wrappedMux := NewLogger(NewResponseHeader(mux, "Midde-Ware-Header", "Foo Value"))
 
 	err := http.ListenAndServe(addr, wrappedMux)
 	if err != nil {

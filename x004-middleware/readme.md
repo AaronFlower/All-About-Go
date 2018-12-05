@@ -100,3 +100,67 @@ Run....
 2018/12/05 21:41:52 GET /v1/time 10.273µs
 ```
 
+### Chaning Middleware
+
+因为中间件的构造函数接收的参数和返回都是 `http.Handler`，所以你可以对多个中间件进行链式调用。
+
+下面的例子，我们想为所有的 handler 添加 header 返回信息。我们可以创建下面的中间件。
+
+```go
++ // ResponseHeader is a middleware handler that adds a header to the response.
++ type ResponseHeader struct {
++     handler     http.Handler
++     headerName  string
++     headerValue string
++ }
++
++ // ServeHTTP handles the request by adding the response header
++ func (rh *ResponseHeader) ServeHTTP(w http.ResponseWriter, r *http.Request) {
++     // add the header
++     w.Header().Add(rh.headerName, rh.headerValue)
++
++     // call the wrapped handler
++     rh.handler.ServeHTTP(w, r)
++ }
++
++ // NewResponseHeader constructs a new ResponseHeader middleware handler
++ func NewResponseHeader(handler http.Handler, headerName string, headerValue string) *ResponseHeader {
++     return &ResponseHeader{
++         handler,
++         headerName,
++         headerValue,
++     }
++ }
++
+```
+修改我们 `mux`：
+```go
+    wrappedMux := NewLogger(NewResponseHeader(mux, "Midde-Ware-Header", "Foo Value"))
+```
+请求结果可以看到中间件输出的 heade 信息。
+
+```bash
+x004-middleware master ✗ 1m △ ◒ ➜ http :8080/v1/time
+HTTP/1.1 200 OK
+Content-Length: 26
+Content-Type: text/plain; charset=utf-8
+Date: Wed, 05 Dec 2018 13:57:22 GMT
+Midde-Ware-Header: Foo Value
+
+the current time is 9:57PM
+
+x004-middleware master ✗ 14m △ ◒ ➜ http :8080/v1/hello
+HTTP/1.1 200 OK
+Content-Length: 12
+Content-Type: text/plain; charset=utf-8
+Date: Wed, 05 Dec 2018 13:57:31 GMT
+Midde-Ware-Header: Foo Value
+
+Hello world
+
+```
+
+你可以根据需要添加更多的中间件。当中间件很少的时候，这样写没有问题，但是如果有更多的中间件，你可能需要 [Adapter Pattern](https://medium.com/@matryer/writing-middleware-in-golang-and-how-go-makes-it-so-much-fun-4375c1246e81）, 这样可以更加优雅把你的中间件组合在一起。
+
+### Middleware and Request-Scoped Values
+
