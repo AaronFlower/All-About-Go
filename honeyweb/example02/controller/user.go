@@ -1,4 +1,4 @@
-package controllers
+package controller
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/aaronflower/ago/honeyweb/example02/models/user"
+	"github.com/aaronflower/ago/honeyweb/example02/model/user"
 	"github.com/aaronflower/honey"
 )
 
