@@ -59,3 +59,27 @@ func (c *UserController) Post() {
 	}
 	fmt.Fprintf(w, string(userByte))
 }
+
+// Delete deletes a user.
+func (c *UserController) Delete() {
+	r, w := c.Ct.Request, c.Ct.ResponseWriter
+	id := r.FormValue("id")
+	fmt.Printf("r.Form = %+v\n", r.Form)
+	if len(id) == 0 {
+		fmt.Fprintf(w, "Please input the id 1")
+		return
+	}
+
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		log.Fatal(err)
+		fmt.Fprintf(w, "Please input the id 2")
+		return
+	}
+
+	err = user.Delete(idInt)
+	if err != nil {
+		log.Fatal(err)
+		fmt.Fprintf(w, "Please input the id 3")
+	}
+}
