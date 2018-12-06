@@ -26,8 +26,13 @@ func (t *Templ) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
+	r := NewRoom()
 	// root
 	http.Handle("/", &Templ{filename: "chat.html"})
+	http.Handle("/room", r)
+
+	// get the room going, running the room in a separate goroutine.
+	go r.Run()
 
 	// start the web server
 	if err := http.ListenAndServe(":8080", nil); err != nil {

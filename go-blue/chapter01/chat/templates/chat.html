@@ -4,8 +4,67 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width" />
         <title>Chat</title>
+        <style type="text/css" media="screen">
+            body {
+                margin: auto;
+                width: 60%;
+            }
+            .chat-container {
+                border: 1px dashed #ccc;
+                width: 100%;
+            }
+            input {display: block;}
+            ul {list-style: none;}
+        </style>
     </head>
     <body>
-        Let's chat (from template)
+        <h2>Chatting Room</h2>
+        <div class="chat-container">
+            <ul id="messages"></ul>
+            <form id="chatbox" action="">
+                <textarea id="msg-box" name="msg" cols="30" rows="10"></textarea>
+                <input type="submit" name="send" id="send" value="Send" />
+            </form>
+        </div>
+
+        <script charset="utf-8">
+            window.onload = function () {
+                let socket = null
+                let $msgBox = document.getElementById("msg-box")
+                let $messages = document.getElementById("messages")
+                let $form = document.getElementById("chatbox")
+                $form.onsubmit = function (e) {
+                    let msg = $msgBox.value.trim()
+                    if (msg === '') {
+                        alert("Please input the message")
+                        return false
+                    }
+                    if (!socket) {
+                        console.error("Error: there is no socket connetion.")
+                        return false
+                    }
+                    socket.send(msg)
+                    console.log("on submit")
+                    $msgBox.value = ''
+                    return false
+                }
+
+                if (!window["WebSocket"]) {
+                    console.error("Your browser dose not support web sockets.")
+                } else {
+                    socket = new WebSocket("ws://localhost:8080/room")
+                    socket.onclose = function () {
+                        console.log("Connection has been closed.")
+                    }
+                    socket.onmessage = function (e) {
+                        let $li = document.createElement('li')
+                        $li.innerText = e.data
+                        $messages.appendChild($li)
+                    }
+                }
+
+                console.log("Hello")
+            }
+        </script>
     </body>
 </html>
