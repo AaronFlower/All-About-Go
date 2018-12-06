@@ -88,6 +88,12 @@ Hello world
 
 `NewLogger()` 构造函数接收一个 `http.Handler` 参数返回一个 Logger 的实例。因为 `http.ServeMux`实现了 `http.Handler`接口， 所以可以把这个 `mux`传递给 logger 中间件。另外，因为我们 Logger 也实现了 `ServeHTTP()`方法，所以实现了 `http.Handler`接口，所以我们的 Logger 实例也可以传递给 `http.ListenAndServe()`函数。这们我们的 Logger 中间件就应用上了。
 
+```go
+// 因为 ServeMux 也是实现 http.Handler 的 ServeHTTP() 接口
+// 所以我们可以把 mux 赋值给我的 Logger
+wrappedMux := NewLogger(mux)
+http.ListenAndServe(addr, wrappedMux)
+```
 通过请求可看到服务器的 Log 信息:
 ```bash
 Interrupt: Press ENTER or type command to continue
