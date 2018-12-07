@@ -17,6 +17,10 @@ type UserController struct {
 
 // Get returns the users list
 func (c *UserController) Get() {
+	r := c.Ct.Request
+	fmt.Printf("r = %+v\n", r)
+	fmt.Printf("r.URL = %+v\n", r.URL)
+	fmt.Printf("r.RequestURI = %+v\n", r.RequestURI)
 	v := user.GetAll()
 	users, err := json.Marshal(v)
 	if err != nil {
