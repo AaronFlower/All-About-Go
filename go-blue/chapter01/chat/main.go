@@ -30,6 +30,7 @@ func main() {
 	flag.Parse()
 	// root
 	r := NewRoom()
+	// r.tracer = trace.New(os.Stdout)
 	http.Handle("/", &Templ{filename: "chat.html"})
 	http.Handle("/room", r)
 
