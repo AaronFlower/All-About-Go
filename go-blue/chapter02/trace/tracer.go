@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-// Tracer is the interface that describing an object capable of
+// Tracer is the interface that describes an object capable of
 // tracing events throughout code.
 type Tracer interface {
 	Trace(...interface{})
@@ -20,17 +20,16 @@ func (t *tracer) Trace(a ...interface{}) {
 	fmt.Fprintln(t.out)
 }
 
-type nilTracer struct{}
-
-func (t *nilTracer) Trace(a ...interface{}) {
-}
-
-// New creates a tracer
+// New creates a tracer.
 func New(w io.Writer) Tracer {
 	return &tracer{out: w}
 }
 
-// Off creates a tracer that will ignore calls to it.
+type nilTracer struct{}
+
+func (t *nilTracer) Trace(a ...interface{}) {}
+
+// Off creates a Tracer that will ignore calls to Trace.
 func Off() Tracer {
 	return &nilTracer{}
 }

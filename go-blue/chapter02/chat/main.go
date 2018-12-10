@@ -1,40 +1,45 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 	"log"
 	"net/http"
-	"os"
+	"path/filepath"
 	"sync"
 
 	"html/template"
-
-	"github.com/aaronflower/ago/go-blue/chapter02/trace"
 )
 
-type templ struct {
-	filename string
+// Templ represents a single template
+type Templ struct {
 	once     sync.Once
-	tmpl     *template.Template
+	filename string
+	templ    *template.Template
 }
 
-func (t *templ) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// ServeHTTP handles the HTTP request
+func (t *Templ) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.once.Do(func() {
-		t.tmpl = template.Must(template.ParseFiles("templates/" + t.filename))
+		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
-	t.tmpl.Execute(w, r)
+	t.templ.Execute(w, r)
 }
 
 func main() {
-	room := newRoom()
-	mux := http.NewServeMux()
-	mux.Handle("/", &templ{filename: "chat.html"})
-	mux.Handle("/room", room)
-	room.tracer = trace.New(os.Stdout)
-	go room.run()
-	fmt.Println("The server is listening at ")
-	err := http.ListenAndServe(":8080", mux)
-	if err != nil {
-		log.Fatal(err)
+	var addr = flag.String("addr", ":8080", "The addr of the application")
+	flag.Parse()
+	// root
+	r := NewRoom()
+	// r.tracer = trace.New(os.Stdout)
+	http.Handle("/", &Templ{filename: "chat.html"})
+	http.Handle("/room", r)
+
+	// get the room going, running the room in a separate goroutine.
+	go r.Run()
+
+	// start the web server
+	log.Println("Starting web server on", *addr)
+	if err := http.ListenAndServe(*addr, nil); err != nil {
+		log.Fatal("ListenAndServe:", err)
 	}
 }
