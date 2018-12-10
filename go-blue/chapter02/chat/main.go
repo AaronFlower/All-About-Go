@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 
 	"html/template"
+
+	"github.com/aaronflower/ago/go-blue/chapter02/trace"
 )
 
 type templ struct {
@@ -27,6 +30,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/", &templ{filename: "chat.html"})
 	mux.Handle("/room", room)
+	room.tracer = trace.New(os.Stdout)
 	go room.run()
 	fmt.Println("The server is listening at ")
 	err := http.ListenAndServe(":8080", mux)
