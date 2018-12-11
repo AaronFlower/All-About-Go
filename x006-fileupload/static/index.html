@@ -28,9 +28,7 @@
                     formData.append(key, postData[key])
                 })
                 formData.append('file_data', event.target.result)
-                console.log('Send chunk')
-                console.log(e)
-                console.log(postData, formData)
+                // formData.append('file_data', window.btoa('Hello world!'))
 
                 let xhr = new window.XMLHttpRequest()
                 xhr.open('POST', '/upload')
@@ -51,6 +49,7 @@
                 let chunkSize = Math.floor(size / maxChunks)
                 let remainSize = size % maxChunks
                 console.log(size, chunkSize, remainSize, chunkSize * maxChunks + remainSize)
+                let timestamp = new Date().getTime()
 
                 let readers = Array.from({length: maxChunks + 1}).map(_ => new FileReader())
                 let chunk
@@ -61,11 +60,12 @@
                         chunk = file.slice(i * chunkSize, (i + 1) * chunkSize)
                     }
                     reader.addEventListener("loadend", sendChunk.bind(this, {
-                        chunks: maxChunks + 1,
+                        chunk_size: maxChunks + 1,
                         size: size,
                         index: i,
-                        file: file.name,
+                        filename: file.name,
                         file_type: file.type,
+                        timestamp: timestamp
                     //    blob: chunk
                     }))
                     console.log(chunk)

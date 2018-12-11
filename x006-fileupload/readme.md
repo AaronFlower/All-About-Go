@@ -44,4 +44,21 @@ interface FileReader: EventTarget {
 };
 ```
 
-### 问题1：为什么不用 binary? 而用 base64?
+- 问题1：为什么不用 binary? 而用 base64?
+- 问题2：怎么标识一批请求？怎样避免冲突？
+
+客户端加上时间戳标识, 上传就不会冲突了，就可以惟一标识了。
+
+```
+test master ✗ 4h39m △ ➜ ll |awk 'NR > 1 {print $NF}'|xargs -L 1 md5
+MD5 (1679d561729eclipse-inst-mac64.tar.gz) = dd73186952cbb9960bff92652dfa5f53
+MD5 (1679d561da3eclipse-inst-mac64.tar.gz) = dd73186952cbb9960bff92652dfa5f53
+MD5 (1679d565ca8eclipse-inst-mac64.tar.gz) = dd73186952cbb9960bff92652dfa5f53
+MD5 (1679d56643feclipse-inst-mac64.tar.gz) = dd73186952cbb9960bff92652dfa5f53
+MD5 (1679d566590eclipse-inst-mac64.tar.gz) = dd73186952cbb9960bff92652dfa5f53
+MD5 (1679d566b95eclipse-inst-mac64.tar.gz) = dd73186952cbb9960bff92652dfa5f53
+MD5 (1679d566d30eclipse-inst-mac64.tar.gz) = dd73186952cbb9960bff92652dfa5f53
+MD5 (1679d56a30beclipse-inst-mac64.tar.gz) = dd73186952cbb9960bff92652dfa5f53
+MD5 (1679d56aac0eclipse-inst-mac64.tar.gz) = dd73186952cbb9960bff92652dfa5f53
+MD5 (1679d56ad64eclipse-inst-mac64.tar.gz) = dd73186952cbb9960bff92652dfa5f53
+```
