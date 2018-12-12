@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>Large File Upload</title>
+        <link rel="stylesheet" href="/css/index.css" type="text/css" media="screen" charset="utf-8">
+    </head>
+    <body>
+        <h1>File Upload</h1>
+        <form id="form" action="/upload" method="post" accept-charset="utf-8">
+            <label>Upoad <input type="file" name="filename" id="upload"/></label>
+            <hr>
+            <button type="submit" value="Submit" name="submit">Submit</button>
+        </form>
+
+        <script charset="utf-8">
+            $form = document.getElementById("form")
+            $upload = document.getElementById("upload")
+            let maxChunks = 10 
+
+            function sendChunk (postData, e) {
+                if (e.target.readyState !== FileReader.DONE) {
+                    console.log('Failed: should inform the server to cancel!')
+                }
+                let formData = new window.FormData()
+                Object.keys(postData).forEach(key => {
+                    formData.append(key, postData[key])
+                })
+                formData.append('file_data', event.target.result)
+                // formData.append('file_data', window.btoa('Hello world!'))
+
+                let xhr = new window.XMLHttpRequest()
+                xhr.open('POST', '/upload')
+                xhr.onreadystatechange = function (e) {
+                    console.log('on state change', e)
+                }
+                xhr.send(formData)
+            }
+
+            $form.addEventListener("submit", (e) => {
+                e.preventDefault()
+                if ($upload.files.length === 0) {
+                    alert("Please choose the file!")
+                    return 
+                }
+                let file = $upload.files[0]
+                let size = file.size
+                let chunkSize = Math.floor(size / maxChunks)
+                let remainSize = size % maxChunks
+                console.log(size, chunkSize, remainSize, chunkSize * maxChunks + remainSize)
+                let timestamp = new Date().getTime()
+
+                let readers = Array.from({length: maxChunks + 1}).map(_ => new FileReader())
+                let chunk
+                readers.forEach((reader, i) => {
+                    if (i == maxChunks) {
+                        chunk = file.slice(i * chunkSize) 
+                    } else {
+                        chunk = file.slice(i * chunkSize, (i + 1) * chunkSize)
+                    }
+                    reader.addEventListener("loadend", sendChunk.bind(this, {
+                        chunk_size: maxChunks + 1,
+                        size: size,
+                        index: i,
+                        filename: file.name,
+                        file_type: file.type,
+                        timestamp: timestamp
+                    //    blob: chunk
+                    }))
+                    console.log(chunk)
+                    reader.readAsDataURL(chunk)
+                })
+                console.log(readers)
+            })
+        </script>
+    </body>
+</html>

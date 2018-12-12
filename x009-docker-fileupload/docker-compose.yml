@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+    nginx:
+        image: nginx:1.15-alpine
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf
+        ports:
+            - 9000:9000
+        networks:
+            - upload
+    site-app:
+        image: golang:alpine
+        volumes:
+            - ./site.app:/go/src/app
+
+        working_dir: /go/src/app
+        command: /bin/sh -c "go run main.go"
+        ports:
+            - 80
+        container_name: mysite
+        restart: always
+        networks:
+            - upload
+              
+    upload1:
+        image: golang:alpine
+        volumes:
+            - ./upload.service:/go/src/app
+        working_dir: /go/src/app
+        command: /bin/sh -c "go run main.go"
+        ports:
+            - 80
+        networks:
+            - upload
+        container_name: upload1
+        restart: always
+
+    upload2:
+        image: golang:alpine
+        volumes:
+            - ./upload.service:/go/src/app
+        working_dir: /go/src/app
+        command: /bin/sh -c "go run main.go"
+        ports:
+            - 80
+        networks:
+            - upload
+        container_name: upload2
+        restart: always
+
+networks:
+    upload:
+
