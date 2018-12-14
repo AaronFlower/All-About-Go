@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package go.micro.srv.student;
+
+service StudentService {
+    rpc CreateStudent(Student) returns (Response) {}
+    rpc GetAll(GetRequest) returns (Response) {}
+}
+
+message Student {
+    string id = 1;
+    string name = 2;
+    int32 age = 3;
+}
+
+message GetRequest {}
+
+message Response {
+    bool created = 1;
+    Student student = 2;
+    repeated Student students = 3;
+}
+
