@@ -9,4 +9,5 @@
 ### TODO
 - 上传取消
 - Map clear 机制。
+- 安全，为什么只有 base64? bin?
 
