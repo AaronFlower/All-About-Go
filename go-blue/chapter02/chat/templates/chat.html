@@ -22,6 +22,7 @@
         <div class="chat-container">
             <ul id="messages"></ul>
             <form id="chatbox" action="">
+                {{.UserData.name}}: <br />
                 <textarea id="msg-box" name="msg" cols="30" rows="10"></textarea>
                 <input type="submit" name="send" id="send" value="Send" />
             </form>
@@ -43,7 +44,7 @@
                         console.error("Error: there is no socket connetion.")
                         return false
                     }
-                    socket.send(msg)
+                    socket.send(JSON.stirngify({"Message": msg}))
                     console.log("on submit")
                     $msgBox.value = ''
                     return false
@@ -57,8 +58,14 @@
                         console.log("Connection has been closed.")
                     }
                     socket.onmessage = function (e) {
+                        let msg = JSON.parse(e.data)
                         let $li = document.createElement('li')
-                        $li.innerText = e.data
+                        let $name = document.CreateElement('strong')
+                        let $msg = document.CreateElement('span')
+                        $name.innerText = msg.Name
+                        $msg.innerText = msg.Message
+                        $li.appendChild($name)
+                        $li.appendChild($msg)
                         $messages.appendChild($li)
                     }
                 }
