@@ -44,8 +44,8 @@
                         console.error("Error: there is no socket connetion.")
                         return false
                     }
-                    socket.send(JSON.stirngify({"Message": msg}))
-                    console.log("on submit")
+                    console.log("on submit", JSON.stringify({"Message": msg}))
+                    socket.send(JSON.stringify({"Message": msg}))
                     $msgBox.value = ''
                     return false
                 }
@@ -60,9 +60,9 @@
                     socket.onmessage = function (e) {
                         let msg = JSON.parse(e.data)
                         let $li = document.createElement('li')
-                        let $name = document.CreateElement('strong')
-                        let $msg = document.CreateElement('span')
-                        $name.innerText = msg.Name
+                        let $name = document.createElement('strong')
+                        let $msg = document.createElement('span')
+                        $name.innerText = msg.Name + ": "
                         $msg.innerText = msg.Message
                         $li.appendChild($name)
                         $li.appendChild($msg)

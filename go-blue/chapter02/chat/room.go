@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -90,7 +89,6 @@ func (r *Room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		log.Fatal("Failed to get auth cookie:", err)
 		return
 	}
-	fmt.Printf("authCookieValue = %+v\n", authCookie)
 
 	client := &Client{
 		socket:   socket,
