@@ -62,6 +62,17 @@ func loadConfig(providers *ProviderMap) error {
 	return nil
 }
 
+func logout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:   "auth",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	})
+	w.Header().Set("Location", "/chat")
+	w.WriteHeader(http.StatusTemporaryRedirect)
+}
+
 func main() {
 	var addr = flag.String("addr", ":8080", "The addr of the application")
 	flag.Parse()
@@ -95,6 +106,7 @@ func main() {
 	mux.Handle("/", MustAuth(&Templ{filename: "chat.html"}))
 	mux.Handle("/login", &Templ{filename: "login.html"})
 	mux.HandleFunc("/auth/", loginHandler)
+	mux.HandleFunc("/logout", logout)
 	mux.Handle("/room", r)
 
 	// get the room going, running the room in a separate goroutine.
