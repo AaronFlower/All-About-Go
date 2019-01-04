@@ -19,6 +19,13 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+// set the active Avatar implementation
+var avatars Avatar = TryAvatars{
+	UseFileSystemAvatar,
+	UseAuthAvatar,
+	UseGravatar,
+}
+
 // Templ represents a single template
 type Templ struct {
 	once     sync.Once
@@ -105,9 +112,12 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/", MustAuth(&Templ{filename: "chat.html"}))
 	mux.Handle("/login", &Templ{filename: "login.html"})
+	mux.Handle("/upload", &Templ{filename: "upload.html"})
 	mux.HandleFunc("/auth/", loginHandler)
 	mux.HandleFunc("/logout", logout)
+	mux.HandleFunc("/uploader", uploadHandler)
 	mux.Handle("/room", r)
+	mux.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./avatars"))))
 
 	// get the room going, running the room in a separate goroutine.
 	go r.Run()
