@@ -55,6 +55,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	provider := segs[3]
 	switch action {
 	case "login":
+
 		provider, err := gomniauth.Provider(provider)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Error when trying to get provider %s:%s", provider, err), http.StatusBadRequest)
