@@ -69,3 +69,6 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 
 channel 可以看成是一个内存级线程安全的消息队列，发送者存数据而接收取数据。在聊天室 room 的 channel 是提供给 client 放数据的地方，放了数据之后 room 会把这数据取出广播到 client 的 channel 上，client得知数据已经被存上了之后，会把数据取走发给客户端浏览器。
+
+
+## Tracing Code Design
