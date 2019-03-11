@@ -1,11 +1,11 @@
-package quicksort
+package qsort
 
-// Quicksort use partition method to sort an array.
-func Quicksort(data []int) {
+// QuickSort use partition method to sort an array.
+func QuickSort(data []int) {
 	if len(data) > 1 {
 		i := partition(data)
-		Quicksort(data[:i])
-		Quicksort(data[i+1:])
+		QuickSort(data[:i])
+		QuickSort(data[i+1:])
 	}
 }
 
