@@ -1,10 +1,7 @@
 package quicksort
 
-import "fmt"
-
 // Quicksort use partition method to sort an array.
 func Quicksort(data []int) {
-	fmt.Println("QuickSort :", data)
 	if len(data) > 1 {
 		i := partition(data)
 		Quicksort(data[:i])
