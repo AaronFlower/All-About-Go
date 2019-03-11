@@ -27,19 +27,13 @@ func (m *MusicManager) Add(entry *MusicEntry) {
 
 // RemoveByIndex removes one music into the manager
 func (m *MusicManager) RemoveByIndex(index int) (entry *MusicEntry) {
+	index--
 	if index < 0 || index >= len(m.musics) {
 		return
 	}
 
 	entry = &m.musics[index]
-
-	if index < len(m.musics)-1 {
-		m.musics = append(m.musics[:index-1], m.musics[index+1:]...)
-	} else if index == 0 {
-		m.musics = make([]MusicEntry, 0)
-	} else {
-		m.musics = m.musics[:index-1]
-	}
+	m.musics = append(m.musics[:index], m.musics[index+1:]...)
 	return
 }
 
