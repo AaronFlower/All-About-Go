@@ -1,6 +1,8 @@
 ## IPC 框架
 
-一个简单的 IPC 框架。
+一个简单的 IPC 框架。IPC ? Interprocess communication (IPC) , 什么是一个 IPC 服务器那？IPC 服务器是一台机器的概念。
+
+Interprocess communication (IPC)  allows bidirectional communication between clients and servers using distributed applications. IPC is a mechanism used by programs and multi-user processes. IPCs allow concurrently running tasks to communicate between themselves on a local computer or between the local computer and a remote computer.
 
 ### 1. 定义数据结构
 
@@ -78,3 +80,13 @@ func (client *IPCClient)Close() {
     client.conn <- "CLOSE"
 }
 ```
+
+## 中央服务器
+
+一个中央服务器作为全局唯一的实例，从原则上需要承担以下责任：
+
+- 在线玩家的状态管理
+- 服务器管理
+- 服天系统
+
+中内服务器可管理其它服务器。但是目前我们仅实现了一个服务器那就可先空着了。目前仅提供聊天服务器，聊天系统只实广播。私聊的需求可自己扩展。
