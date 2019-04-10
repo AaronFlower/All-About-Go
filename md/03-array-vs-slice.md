@@ -5,9 +5,6 @@
 ```go
 a := [3]int{1, 2, 3 }
 b := []int{1, 2, 3}
-
-fmt.Printf("%T \n", a)
-fmt.Printf("%T \n", b)
 ```
 
 区别是 a 是一个 Array, 而 b 是一个 slice.
@@ -29,7 +26,6 @@ func walk(values []int) {
 2. Slice 不有固定长度，赋值操作是是引用语义的。
 3. Slice 其实是下个结构体，有 len, cap 属性。
 4. `len`, `cap` 函数对于 Aarry 和 Slice 都是适用的。
-5. 长度为 0 的 slice 其值是 `nil`
 
 创建 Array 的方法：
 ```go
