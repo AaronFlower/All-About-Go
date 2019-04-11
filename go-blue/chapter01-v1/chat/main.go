@@ -34,6 +34,7 @@ func main() {
 	r.Handle("/", &Templ{filename: "chat.html"})
 
 	room := NewRoom()
+	// room.tracer = trace.New(os.Stdout)
 	r.Handle("/room", room)
 
 	go room.Run()

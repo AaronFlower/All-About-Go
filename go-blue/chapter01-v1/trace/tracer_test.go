@@ -17,3 +17,11 @@ func TestNew(t *testing.T) {
 		}
 	}
 }
+
+func TestOff(t *testing.T) {
+	offTracer := Off()
+	if offTracer == nil {
+		t.Error("the Off method shoul not return nil")
+	}
+	offTracer.Trace("Off trace nothing.")
+}
