@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -17,7 +16,6 @@ type Client struct {
 // Read reads data from the browser and send it the room
 func (c *Client) Read() {
 	defer c.conn.Close()
-	fmt.Println("[+] Client is waiting read.")
 	for {
 		_, p, err := c.conn.ReadMessage()
 		if err != nil {

@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+	"os"
 
+	"github.com/AaronFlower/All-About-Go/go-blue/chapter01-v1/trace"
 	"github.com/gorilla/websocket"
 )
 
@@ -14,6 +15,7 @@ type Room struct {
 	join    chan *Client
 	leave   chan *Client
 	forward chan string
+	tracer  trace.Tracer
 }
 
 // Run starts the chat room
@@ -22,19 +24,19 @@ func (r *Room) Run() {
 		select {
 		case client := <-r.join:
 			r.clients[client] = true
-			fmt.Println("[+] A Client is joined.")
+			r.tracer.Trace("[+] A Client is joined.")
 		case client := <-r.leave:
 			if _, ok := r.clients[client]; ok {
 				delete(r.clients, client)
 				close(client.forward) // 通知 client 的 Write 不要再等了.
-				fmt.Println("[+] A Client has left.")
+				r.tracer.Trace("[+] A Client has left.")
 			} else {
-				log.Println("[-] The leaving client is unkonwn")
+				r.tracer.Trace("[-] The leaving client is unkonwn")
 			}
 		case msg := <-r.forward:
 			for client := range r.clients {
 				client.forward <- msg
-				log.Println(" -- send to client ")
+				r.tracer.Trace(" -- send to client ")
 			}
 		}
 	}
@@ -76,5 +78,6 @@ func NewRoom() *Room {
 		join:    make(chan *Client),
 		leave:   make(chan *Client),
 		forward: make(chan string),
+		tracer:  trace.New(os.Stdout),
 	}
 }
