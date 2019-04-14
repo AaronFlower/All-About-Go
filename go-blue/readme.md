@@ -369,3 +369,27 @@ happy path: 如果一切正常的话，函数所执行的代码路径，即正�
 ### Context in Google App Engine
 
 `Context` is actually an interface that provides **cancelation signals, execute deadlines, and request-scoped data througout a stack of function calls across many components and API boundaries**.
+
+## Ch10 Micro-services in Go with Go kit Framework
+
+### Protocol Buffers
+
+Protocol buffers(called protobuf in code) are a binary serilization format that is very small and extremely quick to encode and decode.
+
+Protocol buffer 只是一个数据格式，二进制序列化格式，占用存储小快速 encode, decode。与 JSON，XML 相比有优势也有劣势。
+
+为了定义 protobuf 我们需要使用 protocol buffers language, 即 proto3 来定义，等定义完成后需要安装一个工具来进行编译和生成代码。
+
+### Constructors in Go
+
+Go doesn't have contructors; it's much simpler and just has functions, and since functions can return argurments, a constructor would just be a global function that returns a usable instance of a struct.
+
+### Endpoints in Go Kit
+
+Endpoints 是一个特殊的函数类型, 在 GO 中表示一个单独的 RPC method。 定义如下：
+
+```
+type Endpoint func(ctx context.Context, request interface{}) (response interface{}, err error)
+```
+
+Endpoints are powerful because, like `http.Handler`(and `http.HandlerFunc`), you can wrap them with generalized middleware to solve a myriad of common issues that arise when building micro-services: logging, tracing, rate limiting, error handling, and more.
