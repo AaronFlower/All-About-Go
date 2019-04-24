@@ -23,6 +23,7 @@ func main() {
 	// }
 
 	doc, err := html.Parse(resp.Body)
+	defer resp.Body.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
