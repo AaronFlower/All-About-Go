@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package encoding;
+
+message MsgInt32 {
+    int32 value = 1;
+}
+
+message MsgInt64 {
+    int64 value = 1;
+}
+
+message MsgSint32 {
+    sint32 value = 1;
+}
+
+message MsgSint64 {
+    sint64 value = 1;
+}
+
+message MsgString {
+    string value = 1;
+}
